@@ -403,13 +403,19 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
     overflow: hidden;
     box-shadow: 0 4px 24px rgba(36, 122, 155, 0.05);
     cursor: pointer;
-    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    -webkit-tap-highlight-color: transparent;
   }
 
   .project-vertical-card:hover {
     transform: translateY(-4px);
     border-color: var(--steel-cyan);
     box-shadow: 0 16px 42px rgba(36, 122, 155, 0.12);
+  }
+
+  .project-vertical-card:active {
+    transform: scale(0.985);
+    transition-duration: 0.12s;
   }
 
   /* 1. BAGIAN ATAS: VISUAL PREVIEW WIDESCREEN PROPORSIONAL */
@@ -673,6 +679,13 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
     line-height: 1.25;
     border-radius: var(--radius-sm);
     white-space: nowrap;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .project-card-actions .btn-compact:active {
+    transform: scale(0.93);
+    transition-duration: 0.12s;
   }
 
   /* FREE-TEXT SECTION: TANPA CARD BOX */
@@ -717,7 +730,7 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
     padding: 20px;
     opacity: 0;
     pointer-events: none;
-    transition: opacity .3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .project-modal.is-open {
@@ -731,6 +744,7 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
     background: rgba(15, 23, 42, 0.65);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .modal-dialog {
@@ -745,7 +759,7 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
     padding: 38px 40px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
     transform: scale(0.96) translateY(12px);
-    transition: transform .3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 2;
   }
 
@@ -767,7 +781,7 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all .2s ease;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .modal-close-btn:hover {
@@ -775,6 +789,10 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
     color: var(--steel-cyan);
     border-color: var(--steel-cyan);
     transform: rotate(90deg);
+  }
+
+  .modal-close-btn:active {
+    transform: rotate(90deg) scale(0.9);
   }
 
   /* Konten Modal */

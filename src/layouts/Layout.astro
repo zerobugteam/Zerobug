@@ -4,12 +4,18 @@ import { ClientRouter } from 'astro:transitions';
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
 }
 
 const {
   title = "ZeroBug Team — Pembuatan Website, Aplikasi HP, & IoT",
-  description = "ZeroBug Team membantu Anda membuat Website, Aplikasi Android & iPhone, serta Alat Pintar IoT siap pakai."
+  description = "ZeroBug Team membantu Anda membuat Website, Aplikasi Android & iPhone, serta Alat Pintar IoT siap pakai.",
+  image = "/og-image.png"
 } = Astro.props;
+
+const siteUrl = Astro.site ? Astro.site.href.replace(/\/$/, '') : 'https://zerobug-two.vercel.app';
+const canonicalURL = new URL(Astro.url.pathname, siteUrl);
+const ogImageURL = image.startsWith('http') ? image : `${siteUrl}${image.startsWith('/') ? '' : '/'}${image}`;
 ---
 
 <!DOCTYPE html>
@@ -20,15 +26,31 @@ const {
   <title>{title}</title>
   <meta name="description" content={description} />
   <meta name="theme-color" content="#247A9B" />
+  <link rel="canonical" href={canonicalURL} />
 
-  <!-- Open Graph -->
+  <!-- Open Graph / WhatsApp / Facebook / LinkedIn / Telegram -->
   <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:site_name" content="ZeroBug Team" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
-  <meta property="og:image" content="/logotrans.png" />
+  <meta property="og:image" content={ogImageURL} />
+  <meta property="og:image:secure_url" content={ogImageURL} />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ZeroBug Team — Software Design & Smart Systems" />
 
-  <!-- Favicon Bulat -->
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content={canonicalURL} />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImageURL} />
+
+  <!-- Favicon & Touch Icon -->
   <link rel="icon" href="/logotrans.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/logotrans.png" />
 
   <!-- Google Fonts: Asynchronous Non-Blocking Load -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -273,16 +295,18 @@ const {
         });
       }
 
-      // Mobile Nav Drawer
+      // Mobile Nav Drawer (Smooth 0.5s Easing & Backdrop)
       var navToggle = document.getElementById('nav-toggle');
       var mainNav = document.getElementById('main-nav');
+      var navBackdrop = document.getElementById('nav-backdrop');
+
       function closeNav() {
         if (!mainNav || !navToggle) return;
         mainNav.classList.remove('is-open');
         navToggle.classList.remove('is-active');
         navToggle.setAttribute('aria-expanded', 'false');
+        if (navBackdrop) navBackdrop.classList.remove('is-open');
         document.body.style.overflow = '';
-        if (window.__lenis) window.__lenis.start();
       }
 
       if (navToggle && mainNav) {
@@ -292,15 +316,19 @@ const {
           var isOpen = mainNav.classList.toggle('is-open');
           newNavToggle.classList.toggle('is-active', isOpen);
           newNavToggle.setAttribute('aria-expanded', String(isOpen));
+          if (navBackdrop) navBackdrop.classList.toggle('is-open', isOpen);
           document.body.style.overflow = isOpen ? 'hidden' : '';
-          if (window.__lenis) {
-            if (isOpen) window.__lenis.stop();
-            else window.__lenis.start();
-          }
         });
 
+        if (navBackdrop) {
+          navBackdrop.addEventListener('click', closeNav);
+        }
+
         mainNav.querySelectorAll('a').forEach(function (link) {
-          link.addEventListener('click', closeNav);
+          link.addEventListener('click', function () {
+            // Berikan waktu sejenak agar penutupan terasa smooth sebelum navigasi jika dalam halaman yang sama
+            setTimeout(closeNav, 150);
+          });
         });
 
         document.addEventListener('keydown', function (e) {

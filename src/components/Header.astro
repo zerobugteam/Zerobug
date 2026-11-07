@@ -13,6 +13,12 @@ const currentPath = Astro.url.pathname;
       <a href="/kapabilitas" class={currentPath === '/kapabilitas' || currentPath === '/kapabilitas/' ? 'active' : ''}>Layanan</a>
       <a href="/tentang" class={currentPath === '/tentang' || currentPath === '/tentang/' ? 'active' : ''}>Tentang</a>
       <a href="/kontak" class={currentPath === '/kontak' || currentPath === '/kontak/' ? 'active' : ''}>Kontak</a>
+      <div class="mobile-nav-cta">
+        <a class="btn btn-primary btn-sm mobile-cta-btn" href="https://wa.me/6281229523471" target="_blank" rel="noopener">
+          <span>Konsultasi Proyek</span>
+          <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg>
+        </a>
+      </div>
     </nav>
 
     <div class="header-actions">
@@ -25,11 +31,15 @@ const currentPath = Astro.url.pathname;
         <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg>
       </a>
       <button class="icon-btn nav-toggle" id="nav-toggle" aria-label="Buka menu navigasi" aria-expanded="false" type="button">
-        <svg class="icon icon-menu-open" aria-hidden="true"><use href="#icon-menu"/></svg>
-        <svg class="icon icon-menu-close" aria-hidden="true"><use href="#icon-x"/></svg>
+        <span class="hamburger-box" aria-hidden="true">
+          <span class="hamburger-bar bar-1"></span>
+          <span class="hamburger-bar bar-2"></span>
+          <span class="hamburger-bar bar-3"></span>
+        </span>
       </button>
     </div>
   </div>
+  <div class="nav-backdrop" id="nav-backdrop" aria-hidden="true"></div>
 </header>
 
 <script is:inline>

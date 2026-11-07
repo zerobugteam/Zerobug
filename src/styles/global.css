@@ -245,8 +245,15 @@ h1, h2, h3, h4 {
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  transition: all .2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
   position: relative;
+}
+
+.btn:active {
+  transform: scale(0.96);
+  transition-duration: 0.12s;
 }
 
 .btn-primary {
@@ -371,22 +378,95 @@ h1, h2, h3, h4 {
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--ink-secondary);
-  transition: all .2s ease;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .icon-btn:hover {
   background: var(--surface-hover);
   color: var(--steel-cyan);
   border-color: var(--steel-cyan);
+  transform: translateY(-1px);
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+  transition-duration: 0.12s;
 }
 
 html[data-theme="light"] .icon-show-dark { display: none; }
 html[data-theme="dark"] .icon-show-light { display: none; }
 
-.nav-toggle { display: none; }
-.nav-toggle .icon-menu-close { display: none; }
-.nav-toggle.is-active .icon-menu-open { display: none; }
-.nav-toggle.is-active .icon-menu-close { display: block; }
+/* Strip 3 Hamburger Button & Smooth Morphing 0.5 Detik */
+.nav-toggle {
+  display: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.hamburger-box {
+  width: 20px;
+  height: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  pointer-events: none;
+}
+
+.hamburger-bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background-color: currentColor;
+  border-radius: 2px;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.5s ease;
+  transform-origin: center;
+}
+
+/* Transisi morphing 0.5 detik saat menu aktif -> bertransformasi menjadi tanda silang 'X' */
+.nav-toggle.is-active .bar-1 {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.nav-toggle.is-active .bar-2 {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.nav-toggle.is-active .bar-3 {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Nav Backdrop Overlay Blur di Mobile */
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  top: 76px;
+  background: rgba(17, 30, 40, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 98;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-backdrop.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.mobile-nav-cta {
+  display: none;
+}
 
 /* ----------------------------- Hero Section ----------------------------- */
 .hero {
@@ -1149,33 +1229,149 @@ section {
 }
 
 @media (max-width: 768px) {
+  .site-header {
+    height: 70px;
+  }
+  .header-inner {
+    height: 70px;
+  }
+  .nav-backdrop {
+    top: 70px;
+  }
   .main-nav {
     position: fixed;
-    top: 76px;
+    top: 70px;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: var(--bg);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
     flex-direction: column;
-    align-items: flex-start;
-    padding: 30px 24px;
-    gap: 16px;
-    display: none;
+    align-items: stretch;
+    padding: 20px 20px 28px;
+    gap: 8px;
     z-index: 99;
+    display: flex;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-16px);
+    pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                visibility 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
   }
-  .main-nav.is-open { display: flex; }
-  .main-nav a { font-size: 1.15rem; font-weight: 600; width: 100%; padding: 8px 0; }
-  .nav-toggle { display: inline-flex; }
-  .nav-cta-btn { display: none; }
+
+  .main-nav.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .main-nav a {
+    font-size: 1.05rem;
+    font-weight: 600;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    background: transparent;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
+    transform: translateX(-14px);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .main-nav a:active {
+    transform: scale(0.97);
+    transition-duration: 0.12s;
+  }
+
+  .main-nav.is-open a {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .main-nav.is-open a:nth-child(1) { transition-delay: 0.05s; }
+  .main-nav.is-open a:nth-child(2) { transition-delay: 0.10s; }
+  .main-nav.is-open a:nth-child(3) { transition-delay: 0.15s; }
+  .main-nav.is-open a:nth-child(4) { transition-delay: 0.20s; }
+
+  .main-nav a:hover,
+  .main-nav a.active {
+    background: var(--surface-hover);
+    color: var(--steel-cyan);
+  }
+
+  .main-nav a::after {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .nav-cta-btn {
+    display: none;
+  }
+
+  .mobile-nav-cta {
+    display: block;
+    margin-top: 10px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: 0.22s;
+  }
+
+  .main-nav.is-open .mobile-nav-cta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .mobile-cta-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+  }
+
   .metrics-ribbon { grid-template-columns: 1fr; }
   .ribbon-col { border-right: none !important; border-bottom: 1px solid var(--border); }
   .ribbon-col:last-child { border-bottom: none; }
   .process-grid { grid-template-columns: 1fr; }
   .footer-top { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; gap: 10px; text-align: center; }
-  .hero { padding: 50px 0 60px; }
-  .cta-box { padding: 44px 20px; }
-  .pure-logo-track { gap: 36px; }
+  .hero { padding: 42px 0 54px; }
+  .cta-box { padding: 36px 18px; }
+  .pure-logo-track { gap: 28px; }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+  .hero-headline {
+    font-size: clamp(1.95rem, 8vw, 2.6rem);
+    line-height: 1.15;
+  }
+  .hero-sub {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 12px;
+  }
+  .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* ----------------------------- KINETIC PLUNGE TRANSITION ("Transisi Menghujam") ----------------------------- */
