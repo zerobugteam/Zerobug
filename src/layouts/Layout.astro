@@ -234,9 +234,11 @@ const ogImageURL = image.startsWith('http') ? image : `${siteUrl}${image.startsW
 
       var originalLoader = event.loader;
       event.loader = async function () {
-        // Durasi hujaman masuk layar dari atas
-        await new Promise(function (resolve) { setTimeout(resolve, 440); });
-        await originalLoader();
+        // Jalankan fetch halaman PARALEL dengan animasi sigap (tanpa blocking delay!)
+        await Promise.all([
+          originalLoader(),
+          new Promise(function (resolve) { setTimeout(resolve, 200); })
+        ]);
       };
     });
 
@@ -244,7 +246,7 @@ const ogImageURL = image.startsWith('http') ? image : `${siteUrl}${image.startsW
       var plunge = document.getElementById('page-plunge');
       if (plunge && plunge.classList.contains('is-diving-in')) {
         requestAnimationFrame(function () {
-          // Fase 2: Meneruskan hujaman keluar layar ke arah bawah
+          // Fase 2: Meneruskan hujaman keluar layar ke arah bawah secara sigap
           plunge.classList.remove('is-diving-in');
           plunge.classList.add('is-diving-out');
 
@@ -254,8 +256,8 @@ const ogImageURL = image.startsWith('http') ? image : `${siteUrl}${image.startsW
             plunge.classList.remove('is-diving-out', 'is-active');
             setTimeout(function () {
               plunge.classList.remove('is-reset');
-            }, 60);
-          }, 460);
+            }, 30);
+          }, 240);
         });
       }
     });
@@ -348,7 +350,7 @@ const ogImageURL = image.startsWith('http') ? image : `${siteUrl}${image.startsW
               }
             });
           },
-          { threshold: 0.08, rootMargin: '0px 0px -36px 0px' }
+          { threshold: 0.01, rootMargin: '0px 0px 80px 0px' }
         );
         revealEls.forEach(function (el) { revealObserver.observe(el); });
       } else {

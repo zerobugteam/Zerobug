@@ -50,8 +50,8 @@ const projectsList = [
     category: "Sistem Perpustakaan Digital & IoT",
     status: "Sudah Beroperasi",
     statusType: "active",
-    image: null,
-    url: null,
+    image: "/projects/bakorwil-nawasena.jpg",
+    url: "https://pustaka-nawasena.vercel.app/",
     summary: "Sistem perpustakaan digital untuk otomasi katalog buku, sirkulasi peminjaman, dan presensi terintegrasi IoT ESP32.",
     stats: [
       { num: "IoT Integrated", text: "Presensi Otomatis ESP32" },
@@ -83,8 +83,8 @@ const projectsList = [
     category: "Loker Pintar IoT & Web Monitoring",
     status: "Sudah Beroperasi",
     statusType: "active",
-    image: null,
-    url: null,
+    image: "/projects/smart-drop-point.jpg",
+    url: "https://smart-drop-locker.vercel.app/",
     summary: "Loker paket pintar berbasis IoT dengan integrasi kamera ESP32-CAM, scan resi otomatis, dan Web Dashboard.",
     stats: [
       { num: "< 1 Detik", text: "Respon Buka Loker" },
@@ -240,144 +240,147 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
 <script is:inline define:vars={{ projectsList }}>
   window.__ZEROBUG_PROJECTS__ = projectsList;
 
-  function initProjectModal() {
+  function openProjectModalById(projectId) {
     var modal = document.getElementById('project-detail-modal');
-    var backdrop = document.getElementById('modal-backdrop');
-    var closeBtn = document.getElementById('modal-close-btn');
     var contentArea = document.getElementById('modal-content-area');
-    var interactiveCards = document.querySelectorAll('.project-interactive-card');
-    var openDetailBtns = document.querySelectorAll('.open-detail-btn');
+    var list = window.__ZEROBUG_PROJECTS__ || [];
+    var project = list.find(function(p) { return p.id === projectId; });
+    if (!modal || !contentArea || !project) return;
 
-    if (!modal || !contentArea) return;
+    var urlSection = project.url ? `
+      <div class="modal-link-action">
+        <a href="${project.url}" target="_blank" rel="noopener" class="modal-visit-btn-slim">
+          Kunjungi Website Resmi
+        </a>
+      </div>
+    ` : '';
 
-    function openModal(projectId) {
-      var project = window.__ZEROBUG_PROJECTS__.find(function(p) { return p.id === projectId; });
-      if (!project) return;
+    var imageSection = project.image ? `
+      <div class="modal-image-preview">
+        <img src="${project.image}" alt="${project.title}" class="modal-preview-img" />
+      </div>
+    ` : '';
 
-      var urlSection = project.url ? `
-        <div class="modal-link-row">
-          <span class="modal-link-label">Website Resmi:</span>
-          <a href="${project.url}" target="_blank" rel="noopener" class="modal-blue-text-link">${project.url}</a>
-        </div>
-      ` : '';
+    var featuresHtml = project.detail.features.map(function(f) {
+      return `<li><svg class="icon bullet-icon"><use href="#icon-check"/></svg><span>${f}</span></li>`;
+    }).join('');
 
-      var imageSection = project.image ? `
-        <div class="modal-image-preview">
-          <img src="${project.image}" alt="${project.title}" class="modal-preview-img" />
-        </div>
-      ` : '';
+    var techHtml = project.detail.techStack.map(function(t) {
+      return `<span class="tag-pill">${t}</span>`;
+    }).join('');
 
-      var featuresHtml = project.detail.features.map(function(f) {
-        return `<li><svg class="icon bullet-icon"><use href="#icon-check"/></svg><span>${f}</span></li>`;
-      }).join('');
+    var statsHtml = project.stats && project.stats.length ? `
+      <div class="modal-stats-grid">
+        ${project.stats.map(function(s) {
+          return `
+            <div class="modal-stat-item">
+              <span class="modal-stat-num">${s.num}</span>
+              <span class="modal-stat-label">${s.text}</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    ` : '';
 
-      var techHtml = project.detail.techStack.map(function(t) {
-        return `<span class="tag-pill">${t}</span>`;
-      }).join('');
+    contentArea.innerHTML = `
+      <div class="modal-header-meta">
+        <span class="project-sys-id">${project.category}</span>
+      </div>
 
-      var statsHtml = project.stats && project.stats.length ? `
-        <div class="modal-stats-grid">
-          ${project.stats.map(function(s) {
-            return `
-              <div class="modal-stat-item">
-                <span class="modal-stat-num">${s.num}</span>
-                <span class="modal-stat-label">${s.text}</span>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      ` : '';
+      <h2 class="modal-title">${project.title}</h2>
+      <p class="modal-headline">${project.headline}</p>
 
-      contentArea.innerHTML = `
-        <div class="modal-header-meta">
-          <span class="project-sys-id">${project.category}</span>
-        </div>
+      ${urlSection}
 
-        <h2 class="modal-title">${project.title}</h2>
-        <p class="modal-headline">${project.headline}</p>
+      ${imageSection}
 
-        ${urlSection}
+      ${statsHtml}
 
-        ${imageSection}
-
-        ${statsHtml}
-
-        <div class="modal-narrative-grid">
-          <div class="modal-block">
-            <h3 class="block-title">Latar Belakang &amp; Kebutuhan</h3>
-            <p class="block-text">${project.detail.problem}</p>
-          </div>
-
-          <div class="modal-block">
-            <h3 class="block-title">Solusi Pengembangan ZeroBug</h3>
-            <p class="block-text">${project.detail.solution}</p>
-          </div>
+      <div class="modal-narrative-grid">
+        <div class="modal-block">
+          <h3 class="block-title">Latar Belakang &amp; Kebutuhan</h3>
+          <p class="block-text">${project.detail.problem}</p>
         </div>
 
         <div class="modal-block">
-          <h3 class="block-title">Fitur-Fitur Kunci yang Diterapkan</h3>
-          <ul class="modal-features-list">
-            ${featuresHtml}
-          </ul>
+          <h3 class="block-title">Solusi Pengembangan ZeroBug</h3>
+          <p class="block-text">${project.detail.solution}</p>
         </div>
+      </div>
 
-        <div class="modal-block">
-          <h3 class="block-title">Spesifikasi Teknologi Terverifikasi</h3>
-          <div class="project-tags modal-tags">
-            ${techHtml}
-          </div>
+      <div class="modal-block">
+        <h3 class="block-title">Fitur-Fitur Kunci yang Diterapkan</h3>
+        <ul class="modal-features-list">
+          ${featuresHtml}
+        </ul>
+      </div>
+
+      <div class="modal-block">
+        <h3 class="block-title">Spesifikasi Teknologi Terverifikasi</h3>
+        <div class="project-tags modal-tags">
+          ${techHtml}
         </div>
+      </div>
 
-        <div class="modal-footer-cta">
-          <p class="cta-note">Ingin membangun sistem dengan arsitektur serupa?</p>
-          <a href="https://wa.me/6281229523471?text=Halo%20ZeroBug,%20saya%20tertarik%20dengan%20proyek%20${encodeURIComponent(project.title)}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">
-            <span>Diskusikan Proyek Anda</span>
-          </a>
-        </div>
-      `;
+      <div class="modal-footer-cta">
+        <p class="cta-note">Ingin membangun sistem dengan arsitektur serupa?</p>
+        <a href="https://wa.me/6281229523471?text=Halo%20ZeroBug,%20saya%20tertarik%20dengan%20proyek%20${encodeURIComponent(project.title)}" target="_blank" rel="noopener" class="btn btn-primary btn-xs">
+          <span>Diskusikan Proyek Anda</span>
+        </a>
+      </div>
+    `;
 
-      modal.classList.add('is-open');
-      modal.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-      if (window.__lenis) window.__lenis.stop();
-    }
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
 
-    function closeModal() {
-      modal.classList.remove('is-open');
-      modal.setAttribute('aria-hidden', 'true');
-      document.body.style.overflow = '';
-      if (window.__lenis) window.__lenis.start();
-    }
+  function closeProjectModal() {
+    var modal = document.getElementById('project-detail-modal');
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
 
-    // Pasang listener pada card
-    interactiveCards.forEach(function(card) {
-      card.addEventListener('click', function(e) {
-        if (e.target.closest('a')) return;
-        var pId = card.getAttribute('data-project-id');
-        openModal(pId);
-      });
-    });
+  // Event Delegation Global: Dijamin 100% langsung bisa diklik kapan saja (tanpa error Astro View Transitions)
+  if (!window.__zerobugModalDelegationBound) {
+    window.__zerobugModalDelegationBound = true;
 
-    // Pasang listener pada tombol detail
-    openDetailBtns.forEach(function(btn) {
-      btn.addEventListener('click', function(e) {
+    document.addEventListener('click', function(e) {
+      // 1. Klik tombol Tutup atau Backdrop modal
+      if (e.target.closest('#modal-close-btn') || e.target.id === 'modal-backdrop') {
+        closeProjectModal();
+        return;
+      }
+
+      // 2. Klik tombol link eksternal (misal Kunjungi Website) -> biarkan navigasi berjalan normal
+      if (e.target.closest('a')) return;
+
+      // 3. Klik tombol "Lihat Detail" atau kartu proyek mana pun
+      var detailBtn = e.target.closest('.open-detail-btn');
+      if (detailBtn) {
+        e.preventDefault();
         e.stopPropagation();
-        var pId = btn.getAttribute('data-project-id');
-        openModal(pId);
-      });
-    });
+        var btnId = detailBtn.getAttribute('data-project-id');
+        if (btnId) openProjectModalById(btnId);
+        return;
+      }
 
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (backdrop) backdrop.addEventListener('click', closeModal);
+      var card = e.target.closest('.project-interactive-card');
+      if (card) {
+        var cardId = card.getAttribute('data-project-id');
+        if (cardId) openProjectModalById(cardId);
+      }
+    });
 
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && modal.classList.contains('is-open')) {
-        closeModal();
+      var modal = document.getElementById('project-detail-modal');
+      if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) {
+        closeProjectModal();
       }
     });
   }
-
-  document.addEventListener('astro:page-load', initProjectModal);
 </script>
 
 <style>
@@ -389,8 +392,8 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
 
   .projects-catalog-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-    gap: 32px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 26px;
   }
 
   /* Kartu Vertikal Proposional (Gambar di Atas, Penjelasan di Bawah) */
@@ -401,21 +404,21 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
     background: var(--surface);
     border: 1px solid var(--border);
     overflow: hidden;
-    box-shadow: 0 4px 24px rgba(36, 122, 155, 0.05);
+    box-shadow: 0 4px 20px rgba(36, 122, 155, 0.05);
     cursor: pointer;
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
     -webkit-tap-highlight-color: transparent;
   }
 
   .project-vertical-card:hover {
     transform: translateY(-4px);
     border-color: var(--steel-cyan);
-    box-shadow: 0 16px 42px rgba(36, 122, 155, 0.12);
+    box-shadow: 0 14px 36px rgba(36, 122, 155, 0.12);
   }
 
   .project-vertical-card:active {
     transform: scale(0.985);
-    transition-duration: 0.12s;
+    transition-duration: 0.1s;
   }
 
   /* 1. BAGIAN ATAS: VISUAL PREVIEW WIDESCREEN PROPORSIONAL */
@@ -434,22 +437,22 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
 
   .browser-header {
     background: #1E293B;
-    padding: 8px 16px;
+    padding: 8px 14px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .browser-dots {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
   }
 
   .dot {
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
   }
   .dot-red { background: #EF4444; }
@@ -460,27 +463,34 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
     flex-grow: 1;
     background: #0F172A;
     border-radius: var(--radius-pill);
-    padding: 3px 12px;
+    padding: 3px 10px;
     display: flex;
     align-items: center;
     gap: 6px;
     font-family: var(--font-mono);
-    font-size: 0.74rem;
+    font-size: 0.7rem;
     color: #94A3B8;
+    overflow: hidden;
+  }
+
+  .browser-url-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .address-lock-icon {
-    width: 12px;
-    height: 12px;
+    width: 11px;
+    height: 11px;
     color: #10B981;
+    flex-shrink: 0;
   }
 
-  /* Tinggi visual proporsional mengikuti rasio screenshot asli website bandara */
+  /* Tinggi visual seragam dan proporsional untuk layout 3 card */
   .browser-body-compact {
     width: 100%;
-    aspect-ratio: 2.15 / 1;
-    min-height: 260px;
-    max-height: 480px;
+    aspect-ratio: 16 / 10;
+    height: auto;
     position: relative;
     overflow: hidden;
     background: #0B1120;
@@ -502,13 +512,12 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
   .browser-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(17, 30, 40, 0.35);
-    backdrop-filter: blur(2px);
+    background: rgba(17, 30, 40, 0.42);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: opacity .25s ease;
+    transition: opacity 0.2s ease;
   }
 
   .project-vertical-card:hover .browser-overlay {
@@ -575,25 +584,24 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
 
   /* 2. BAGIAN BAWAH: PENJELASAN SINGKAT & SPESIFIKASI */
   .project-card-bottom-info {
-    padding: 30px 34px;
+    padding: 22px 24px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    justify-content: space-between;
   }
 
   .project-meta-ref {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .project-sys-id {
     font-family: var(--font-heading);
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.04em;
     color: var(--steel-cyan);
     text-transform: uppercase;
   }
@@ -610,10 +618,10 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
   }
 
   .project-title-compact {
-    font-size: 1.55rem;
+    font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.3;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     color: var(--ink);
   }
 
@@ -626,10 +634,10 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
   }
 
   .project-summary-compact {
-    font-size: 0.94rem;
+    font-size: 0.88rem;
     color: var(--ink-secondary);
-    line-height: 1.65;
-    margin-bottom: 18px;
+    line-height: 1.55;
+    margin-bottom: 16px;
   }
 
   .project-stats-compact {
@@ -659,8 +667,8 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
   .project-tags-compact {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 22px;
+    gap: 6px;
+    margin-bottom: 18px;
   }
 
   .project-card-actions {
@@ -668,24 +676,25 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
+    margin-top: auto;
     padding-top: 14px;
     border-top: 1px dashed var(--border);
   }
 
   .project-card-actions .btn-compact {
-    padding: 5px 12px;
-    font-size: 0.73rem;
+    padding: 4px 12px;
+    font-size: 0.72rem;
     font-weight: 600;
-    line-height: 1.25;
-    border-radius: var(--radius-sm);
+    line-height: 1.3;
+    border-radius: var(--radius-pill);
     white-space: nowrap;
-    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     -webkit-tap-highlight-color: transparent;
   }
 
   .project-card-actions .btn-compact:active {
-    transform: scale(0.93);
-    transition-duration: 0.12s;
+    transform: scale(0.95);
+    transition-duration: 0.1s;
   }
 
   /* FREE-TEXT SECTION: TANPA CARD BOX */
@@ -719,273 +728,19 @@ const displayProjects = featuredOnly ? [projectsList[0]] : projectsList;
     margin-top: 14px;
   }
 
-  /* MODAL DETAIL POPUP */
-  .project-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .project-modal.is-open {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .modal-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.65);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .modal-dialog {
-    position: relative;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    width: 100%;
-    max-width: 780px;
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 38px 40px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-    transform: scale(0.96) translateY(12px);
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 2;
-  }
-
-  .project-modal.is-open .modal-dialog {
-    transform: scale(1) translateY(0);
-  }
-
-  .modal-close-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--bg-subtle);
-    border: 1px solid var(--border);
-    color: var(--ink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .modal-close-btn:hover {
-    background: var(--cyan-tint);
-    color: var(--steel-cyan);
-    border-color: var(--steel-cyan);
-    transform: rotate(90deg);
-  }
-
-  .modal-close-btn:active {
-    transform: rotate(90deg) scale(0.9);
-  }
-
-  /* Konten Modal */
-  .modal-header-meta {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 10px;
-  }
-
-  .modal-title {
-    font-size: 1.7rem;
-    color: var(--ink);
-    margin-bottom: 4px;
-    line-height: 1.25;
-  }
-
-  .modal-headline {
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: var(--steel-cyan);
-    margin-bottom: 22px;
-  }
-
-  /* Teks Link Biru Bersih di Modal (Tanpa Tombol Berlebihan) */
-  .modal-link-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-    padding: 10px 16px;
-    background: var(--bg-subtle);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-  }
-
-  .modal-link-label {
-    font-size: 0.74rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--ink-muted);
-  }
-
-  .modal-blue-text-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #0284c7;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    transition: color .2s ease;
-  }
-
-  [data-theme="dark"] .modal-blue-text-link {
-    color: #38bdf8;
-  }
-
-  .modal-blue-text-link:hover {
-    color: var(--steel-cyan);
-  }
-
-  .modal-image-preview {
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    margin-bottom: 26px;
-    border: 1px solid var(--border);
-    max-height: 340px;
-  }
-
-  .modal-preview-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  /* Modal Stats Grid */
-  .modal-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    background: var(--bg-subtle);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 16px 20px;
-    margin-bottom: 24px;
-  }
-
-  .modal-stat-item {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .modal-stat-num {
-    font-family: var(--font-heading);
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: var(--steel-cyan);
-    line-height: 1.1;
-  }
-
-  .modal-stat-label {
-    font-size: 0.76rem;
-    color: var(--ink-secondary);
-    font-weight: 500;
-  }
-
-  .modal-narrative-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 24px;
-  }
-
-  .modal-block {
-    margin-bottom: 22px;
-  }
-
-  .block-title {
-    font-size: 1.1rem;
-    color: var(--ink);
-    margin-bottom: 8px;
-  }
-
-  .block-text {
-    font-size: 0.9rem;
-    color: var(--ink-secondary);
-    line-height: 1.6;
-  }
-
-  .modal-features-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .modal-features-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 0.88rem;
-    color: var(--ink);
-    line-height: 1.5;
-  }
-
-  .bullet-icon {
-    width: 16px;
-    height: 16px;
-    color: var(--steel-cyan);
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .modal-tags {
-    margin-top: 8px;
-  }
-
-  .modal-footer-cta {
-    background: var(--cyan-tint);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: 18px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-top: 28px;
-  }
-
-  .cta-note {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--ink);
+  @media (max-width: 1024px) {
+    .projects-catalog-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
   }
 
   @media (max-width: 768px) {
-    .modal-dialog { padding: 26px 18px; }
-    .modal-narrative-grid { grid-template-columns: 1fr; }
-    .modal-url-card { flex-direction: column; align-items: flex-start; }
-    .modal-visit-btn { width: 100%; justify-content: center; }
-    .modal-repo-card { flex-direction: column; align-items: flex-start; }
-    .repo-btn { width: 100%; justify-content: center; }
-    .modal-footer-cta { flex-direction: column; align-items: flex-start; }
-    .modal-footer-cta .btn { width: 100%; justify-content: center; }
-    .modal-stats-grid { grid-template-columns: 1fr; gap: 10px; }
+    .projects-catalog-grid {
+      grid-template-columns: 1fr;
+    }
     .project-stats-compact { grid-template-columns: 1fr; }
-    .browser-body-compact { aspect-ratio: 16 / 9; min-height: 200px; height: auto; }
-    .project-card-bottom-info { padding: 22px 20px; }
+    .browser-body-compact { aspect-ratio: 16 / 10; height: auto; }
+    .project-card-bottom-info { padding: 20px; }
   }
 </style>

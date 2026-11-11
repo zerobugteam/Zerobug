@@ -3,14 +3,8 @@ let rafTicking = false;
 let fadeTimeout = null;
 
 export function initAtlasScroll() {
-  const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Aktifkan native smooth scrolling di HTML
-  if (!isReducedMotion) {
-    document.documentElement.style.scrollBehavior = 'smooth';
-  } else {
-    document.documentElement.style.scrollBehavior = 'auto';
-  }
+  // Gunakan native 1:1 hardware scrolling murni tanpa smooth-behavior override agar scroll 0 delay
+  document.documentElement.style.scrollBehavior = 'auto';
 
   const scrollIndicatorBar = document.getElementById('atlas-scroll-bar');
   if (!scrollIndicatorBar) return;
